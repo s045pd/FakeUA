@@ -1,0 +1,6 @@
+trio==0.6.0+dev
+peewee==3.7.1
+stem==1.6.0
+termcolor==1.1.0
+asks==2.0.0
+pyquery==1.4.0
