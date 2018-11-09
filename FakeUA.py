@@ -162,7 +162,7 @@ def SaveJson(datas, filename):
         f.write(json.dumps(datas, indent=4, ensure_ascii=False))
 
 def MakeChunk(datas,length=100):
-    for item in range(1, math.ceil(len(datas)/length)):
+    for item in range(0, math.ceil(len(datas)/length)):
         yield datas[item*length:(item+1)*length]
 
 def SaveToDB(datas,model):
