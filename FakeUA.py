@@ -30,7 +30,7 @@ POOLS = {}  # 数据池
 TASKS = set()  # 任务池
 DATANUMS = 0
 MAXNUMS = 0
-LIMIT = 1  # 并发限制
+LIMIT = 10  # 并发限制
 PERPAGE = 50
 spiderSession = asks.Session(connections=LIMIT)
 spiderSession.headers = FAKEHEADER
@@ -113,6 +113,7 @@ async def getUAsitem(detals, limit):
         try:
             loger.info(colored(f'fetching -> {url}', 'yellow'))
             resp = await spiderSession.get(url, timeout=5, retries=3)
+            LocalDatas = []
             for item in jq(resp.text)(
                     "body > div.content-base > section > div > table > tbody > tr").items():
                 datas = {
@@ -138,6 +139,8 @@ async def getUAsitem(detals, limit):
                         colored(datas["useragent"], 'green')
                     ]))
                 target.append(datas)
+                LocalDatas.append(datas)
+            SaveToDB(LocalDatas,UAS)
             TASKS.remove(detals)
             DATANUMS +=1
             MAXNUMS -=1
@@ -166,10 +169,11 @@ def MakeChunk(datas,length=100):
         yield datas[item*length:(item+1)*length]
 
 def SaveToDB(datas,model):
-    data_source = []
-    for tk, td in datas.items():
-        for nk,nd in td.items():
-            data_source.extend(nd['UA_list'])
+    # data_source = []
+    data_source = datas
+    # for tk, td in datas.items():
+    #     for nk,nd in td.items():
+    #         data_source.extend(nd['UA_list'])
     if data_source:
         loger.info(colored(f'数据存储至DB中 [{len(data_source)}]', 'yellow'))
         for chunk in list(MakeChunk(data_source)):
@@ -195,4 +199,5 @@ if __name__ == '__main__':
     except Exception as e:
         loger.error(colored(e, 'red'))
     finally:
-        SaveToDB(POOLS, UAS)
+        SaveJson(POOLS, 'POOLS.json')
+        # SaveToDB(POOLS, UAS)
