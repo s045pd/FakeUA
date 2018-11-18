@@ -7,7 +7,7 @@ db = SqliteDatabase('useragents.db') # 初始化数据库
 
 class UAS(Model):
     uid = AutoField(primary_key=True, null=True) # 自增ID
-    useragent = TextField() # useragent
+    useragent = TextField(unique=True) # useragent
     software = CharField(null=True) # 软件类型
     engine = CharField(null=True) # 引擎
     types = CharField(null=True) # 硬件类型
@@ -54,9 +54,9 @@ def UserAgentGroups(colname, limit=10):
 
 if __name__ == '__main__':
     from pprint import pprint
-    # print(UserAgent({
-    #     "software": [
-    #         'Android Browser 4.0'
-    #     ]
-    # }))
-    pprint(UserAgentGroups('engine', 5))
+    print(UserAgent({
+        "software": [
+            'Android Browser 4.0'
+        ]
+    }))
+    # pprint(UserAgentGroups('engine', 5))
